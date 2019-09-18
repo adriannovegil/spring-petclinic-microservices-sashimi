@@ -5,8 +5,8 @@ services:
   # ============================================================================
   # Config server
   config-server:
-    image: raw/spring-petclinic-config-server
-    container_name: raw-config-server
+    image: sashimi/spring-petclinic-config-server
+    container_name: sashimi-config-server
     entrypoint: ["sh", "-c","
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
@@ -15,56 +15,28 @@ services:
 
   # Discovery service
   discovery-server:
-    image: raw/spring-petclinic-discovery-server
-    container_name: raw-discovery-server
+    image: sashimi/spring-petclinic-discovery-server
+    container_name: sashimi-discovery-server
     depends_on:
       - config-server
     entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://config-server:8888 -timeout=120s -- &&
+      ./dockerize -wait=tcp://config-server:8888 -timeout=300s -- &&
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
     ports:
       - 8761:8761
 
-  # Hystrix dashboard
-  hystrix-dashboard:
-    image: raw/spring-petclinic-hystrix-dashboard
-    container_name: raw-hystrix-dashboard
-    depends_on:
-     - config-server
-     - discovery-server
-    entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://config-server:8888 -timeout=120s -- &&
-      java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
-      -jar /app.jar"]
-    ports:
-     - 7979:7979
-
-  # Admin server
-  admin-server:
-    image: raw/spring-petclinic-admin-server
-    container_name: raw-admin-server
-    depends_on:
-     - config-server
-     - discovery-server
-    entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://config-server:8888 -timeout=120s -- &&
-      java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
-      -jar /app.jar"]
-    ports:
-     - 9090:9090
-
   # Services
   # ============================================================================
   # Customers service
   customers-service:
-    image: raw/spring-petclinic-customers-service
-    container_name: raw-customers-service
+    image: sashimi/spring-petclinic-customers-service
+    container_name: sashimi-customers-service
     depends_on:
       - config-server
       - discovery-server
     entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://discovery-server:8761 -timeout=120s -- &&
+      ./dockerize -wait=tcp://discovery-server:8761 -timeout=300s -- &&
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
     ports:
@@ -72,13 +44,13 @@ services:
 
   # Visits service
   visits-service:
-    image: raw/spring-petclinic-visits-service
-    container_name: raw-visits-service
+    image: sashimi/spring-petclinic-visits-service
+    container_name: sashimi-visits-service
     depends_on:
       - config-server
       - discovery-server
     entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://discovery-server:8761 -timeout=120s -- &&
+      ./dockerize -wait=tcp://discovery-server:8761 -timeout=300s -- &&
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
     ports:
@@ -86,13 +58,13 @@ services:
 
   #Vets service
   vets-service:
-    image: raw/spring-petclinic-vets-service
-    container_name: raw-vets-service
+    image: sashimi/spring-petclinic-vets-service
+    container_name: sashimi-vets-service
     depends_on:
       - config-server
       - discovery-server
     entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://discovery-server:8761 -timeout=120s -- &&
+      ./dockerize -wait=tcp://discovery-server:8761 -timeout=300s -- &&
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
     ports:
@@ -100,31 +72,56 @@ services:
 
   # API gateway
   api-gateway:
-    image: raw/spring-petclinic-api-gateway
-    container_name: raw-api-gateway
+    image: sashimi/spring-petclinic-api-gateway
+    container_name: sashimi-api-gateway
     depends_on:
       - config-server
       - discovery-server
     entrypoint: ["sh", "-c","
-      ./dockerize -wait=tcp://discovery-server:8761 -timeout=120s -- &&
+      ./dockerize -wait=tcp://discovery-server:8761 -timeout=300s -- &&
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
       -jar /app.jar"]
     ports:
       - 8080:8080
+
+  # Admin Server
+  # ============================================================================
+  admin-server:
+    image: sashimi/spring-petclinic-admin-server
+    container_name: sashimi-admin-server
+    depends_on:
+     - config-server
+     - discovery-server
+    entrypoint: ["sh", "-c","
+      ./dockerize -wait=tcp://config-server:8888 -timeout=300s -- &&
+      java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
+      -jar /app.jar"]
+    ports:
+     - 9090:9090
+
+  # Circuit breaker
+  # ============================================================================
+  hystrix-dashboard:
+    image: sashimi/spring-petclinic-hystrix-dashboard
+    container_name: sashimi-hystrix-dashboard
+    depends_on:
+     - config-server
+     - discovery-server
+    entrypoint: ["sh", "-c","
+      ./dockerize -wait=tcp://config-server:8888 -timeout=300s -- &&
+      java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
+      -jar /app.jar"]
+    ports:
+     - 7979:7979
 
   # Load
   # ============================================================================
   # Load server
   load-server:
     build: ./docker/load-server
-    image: raw/load-server
-    container_name: raw-load-server
+    image: sashimi/load-server
+    container_name: sashimi-load-server
     depends_on:
-      - api-gateway
-      - customers-service
-      - visits-service
-      - vets-service
-    links:
       - api-gateway
       - customers-service
       - visits-service
