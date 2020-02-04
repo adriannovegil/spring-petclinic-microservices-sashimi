@@ -5,7 +5,7 @@ services:
   # ============================================================================
   # Config server
   config-server:
-    image: sashimi/config-server
+    image: sashimi/spring-petclinic-config-server
     container_name: sashimi-config-server
     entrypoint: ["sh", "-c","
       java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Djava.security.egd=file:/dev/./urandom
@@ -15,7 +15,7 @@ services:
 
   # Discovery service
   discovery-server:
-    image: sashimi/discovery-server
+    image: sashimi/spring-petclinic-discovery-server
     container_name: sashimi-discovery-server
     depends_on:
       - config-server
@@ -87,7 +87,7 @@ services:
   # Admin Server
   # ============================================================================
   admin-server:
-    image: sashimi/admin-server
+    image: sashimi/spring-petclinic-admin-server
     container_name: sashimi-admin-server
     depends_on:
      - config-server
@@ -102,7 +102,7 @@ services:
   # Circuit breaker
   # ============================================================================
   hystrix-dashboard:
-    image: sashimi/hystrix-dashboard
+    image: sashimi/spring-petclinic-hystrix-dashboard
     container_name: sashimi-hystrix-dashboard
     depends_on:
      - config-server
