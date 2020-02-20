@@ -4,7 +4,7 @@ __RAW Version__
 
 ## Starting services locally without Docker
 
-Every microservice is a Spring Boot application and can be started locally using IDE or `../mvnw spring-boot:run` command.
+Every microservice is a Spring Boot application and can be started locally using IDE or `./mvnw spring-boot:run` command.
 
 Please note that supporting services (__Config and Discovery Server__) must be started before any other application (Customers, Vets, Visits and API).
 
@@ -77,3 +77,7 @@ ENV SPRING_PROFILES_ACTIVE docker,mysql
 ```
 In the `mysql section` of the `application.yml` from the [Configuration repository], you have to change
 the host and port of your MySQL JDBC connection string.
+
+## References
+
+ * https://github.com/spring-petclinic/spring-petclinic-microservices
